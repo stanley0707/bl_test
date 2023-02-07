@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  server:
+    image: fastapi:latest
+    container_name: server
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "8081:8081"
+    expose:
+      - "8081"
+    volumes:
+      - ./backend:/backend
+      - /etc/localtime:/etc/localtime:ro
+
+    environment:
+      - DB_DRIVER=postgresql+asyncpg
+      - POSTGRES_USER=postgres
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_PASSWORD=postgres_password
+      - POSTGRES_PORT=5432
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+      - HOST=0.0.0.0
+      - PORT=8081
+      - ACCESS_TOKEN_EXPIRES_IN=15
+      - REFRESH_TOKEN_EXPIRES_IN=60
+      - ALGORITHM=HS256
+      - JWT_SECRET_KEY=secret
+
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    container_name: postgres
+    image: postgres:14.1-alpine
+    volumes:
+      - ./backend/db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+    environment:
+      - DB_DRIVER=postgresql+asyncpg
+      - POSTGRES_USER=postgres
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DATABASE=postgres
+      - POSTGRES_PASSWORD=postgres_password
+      - POSTGRES_PORT=5432
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+
+    command: -p 5432
+    restart: always
