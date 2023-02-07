@@ -1,5 +1,5 @@
 env
-__pycach__/
+__pycache__
 backend/db_data
 vars.env
 .idea
