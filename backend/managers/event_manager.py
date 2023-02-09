@@ -154,17 +154,21 @@ class EventManager(ModelManager):
         """
         if event := await self.get(id=event_id, raise_on=True):
             Account = self.relation_dict["Account"]
-            if invited_account := await Account.manager.get(id=invited_account_id, raise_on=True):
+            if invited_account := await Account.manager.get(
+                id=invited_account_id, raise_on=True
+            ):
                 async with session.begin():
                     try:
                         EventAccountInvite = self.relation_dict["EventAccountInvite"]
                         event_invite = await session.execute(
-                            insert(EventAccountInvite).values(
+                            insert(EventAccountInvite)
+                            .values(
                                 {
                                     "guest_id": invited_account.id,
                                     "event_id": event.id,
                                 }
-                            ).returning(EventAccountInvite)
+                            )
+                            .returning(EventAccountInvite)
                         )
                         event_invite = event_invite.fetchone()
                         await session.execute(
@@ -187,4 +191,3 @@ class EventManager(ModelManager):
                         return True
 
         return False
-

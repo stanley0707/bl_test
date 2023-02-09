@@ -66,7 +66,9 @@ async def invite_to_event(
     :param account curret session account:
     :return:
     """
-    return await Event.manager.invite(account=account, invited_account_id=invited_account_id, event_id=event_id)
+    return await Event.manager.invite(
+        account=account, invited_account_id=invited_account_id, event_id=event_id
+    )
 
 
 @event_router.post("/")

@@ -116,7 +116,9 @@ class ModelManager(BaseManager):
         except Exception as exc:
             self.logger.error("update - an error occurred", error=str(exc))
             await session.rollback()
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+            )
         else:
             return await self.get(scalars=scalars, session=session, **data)
 
@@ -135,7 +137,9 @@ class ModelManager(BaseManager):
             except Exception as exc:
                 self.logger.error(f"create - an error occurred {str(exc)}")
                 await session.rollback()
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+                )
             else:
                 await session.commit()
                 return res
@@ -163,7 +167,9 @@ class ModelManager(BaseManager):
 
                 except Exception as exc:
                     self.logger.error(f"updated an error occurred {str(exc)}")
-                    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+                    )
                 else:
                     await session.commit()
                     return res
@@ -187,7 +193,9 @@ class ModelManager(BaseManager):
                 except Exception as exc:
                     self.logger.error(f"deleted an error occurred {str(exc)}")
                     await session.rollback()
-                    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc))
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+                    )
                 else:
                     session.commit()
                     return res
