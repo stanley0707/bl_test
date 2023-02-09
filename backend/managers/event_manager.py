@@ -13,7 +13,7 @@ class EventManager(ModelManager):
     @property
     def labeled_field_dict(self) -> Dict:
         """
-        :return:
+        :return: special laabled fields for select
         """
         return dict(
             (i.name, i)
@@ -55,7 +55,7 @@ class EventManager(ModelManager):
         """
         :param accounts_count_label:
         :param has_confirmed_invites_label:
-        :return: All account  with event_count_label
+        :return: All account with has_confirmed_invites_label and event_count_label
         """
         fields = self.labeled_field_dict
         accounts_counter = self.model.accounts_count_subquery(accounts_count_label)
@@ -107,6 +107,7 @@ class EventManager(ModelManager):
         session: AsyncSession = coroutine_depends_on(get_async_session),
     ) -> bool:
         """
+        Registered user account on event with is_confirmed = True
         :param account:
         :param event_id:
         :param session:
@@ -136,3 +137,54 @@ class EventManager(ModelManager):
                     await session.commit()
                     return True
         return False
+
+    async def invite(
+        self,
+        account,
+        invited_account_id,
+        event_id,
+        session: AsyncSession = coroutine_depends_on(get_async_session),
+    ) -> bool:
+        """
+        Registered invite user account on event with is_confirmed = True
+        :param account:
+        :param event_id:
+        :param session:
+        :return:
+        """
+        if event := await self.get(id=event_id, raise_on=True):
+            Account = self.relation_dict["Account"]
+            if invited_account := await Account.manager.get(id=invited_account_id, raise_on=True):
+                async with session.begin():
+                    try:
+                        EventAccountInvite = self.relation_dict["EventAccountInvite"]
+                        event_invite = await session.execute(
+                            insert(EventAccountInvite).values(
+                                {
+                                    "guest_id": invited_account.id,
+                                    "event_id": event.id,
+                                }
+                            ).returning(EventAccountInvite)
+                        )
+                        event_invite = event_invite.fetchone()
+                        await session.execute(
+                            insert(self.relation_dict["Invite"]).values(
+                                {
+                                    "inviter_id": account.id,
+                                    "invite_id": event_invite.id,
+                                }
+                            )
+                        )
+                    except HTTPException as exc:
+                        msg = f"Account Event register error: {str(exc)}"
+                        self.logger.error(msg)
+                        await session.rollback()
+                        raise HTTPException(
+                            status_code=status.HTTP_400_BAD_REQUEST, detail=msg
+                        )
+                    else:
+                        await session.commit()
+                        return True
+
+        return False
+

@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import Path, Depends, APIRouter
+from fastapi import Path, Depends, APIRouter, Query
 from db.models import Event, Account
 
 from .serializers import EventSerializer, AccountSerializer
@@ -9,7 +9,7 @@ event_router = APIRouter(prefix="/events", tags=["events"])
 
 
 @event_router.get(
-    "/events",
+    "/",
     dependencies=[Depends(Account.manager.is_authorize)],
     response_model=List[EventSerializer],
 )
@@ -22,7 +22,7 @@ async def all_events():
 
 
 @event_router.get(
-    "/{event_id}",
+    "/{event_id}/",
     dependencies=[Depends(Account.manager.is_authorize)],
     response_model=EventSerializer,
 )
@@ -35,7 +35,7 @@ async def event_detail(event_id: int = Path(..., description="Event id")):
 
 
 @event_router.post(
-    "/{event_id}/reg",
+    "/{event_id}/reg/",
     dependencies=[Depends(Account.manager.is_authorize)],
 )
 async def register_on_event(
@@ -49,6 +49,24 @@ async def register_on_event(
     :return:
     """
     return await Event.manager.register(account=account, event_id=event_id)
+
+
+@event_router.post(
+    "/{event_id}/invite/",
+    dependencies=[Depends(Account.manager.is_authorize)],
+)
+async def invite_to_event(
+    event_id: int = Path(..., description="Event id"),
+    invited_account_id: int = Query(..., description="Invited Account id"),
+    account: AccountSerializer = Depends(Account.manager.get_current_session_account),
+):
+    """
+    Creat invite to event for any account
+    :param event_id:
+    :param account curret session account:
+    :return:
+    """
+    return await Event.manager.invite(account=account, invited_account_id=invited_account_id, event_id=event_id)
 
 
 @event_router.post("/")

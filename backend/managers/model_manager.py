@@ -66,7 +66,7 @@ class ModelManager(BaseManager):
             return res
         if raise_on:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, details="No results found"
+                status_code=status.HTTP_404_NOT_FOUND, detail="No results found"
             )
 
     async def select_for_update(

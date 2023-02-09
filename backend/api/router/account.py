@@ -26,7 +26,7 @@ async def create_user(data: CreateAccountSerializer):
 
 
 @account_router.get(
-    "/",
+    "",
     response_model=List[AccountSerializer],
     dependencies=[Depends(Account.manager.is_authorize)],
 )
