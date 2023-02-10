@@ -15,12 +15,12 @@ class ProjectSettings(BaseSettings):
     db_user: str = Field(..., env="POSTGRES_USER")
     db_name: str = Field(..., env="POSTGRES_DATABASE")
     db_password: str = Field(..., env="POSTGRES_PASSWORD")
-    debug: bool = Field(False, env="DEBUG")
+    test: bool = Field(False, env="TEST")
 
     def __getattr__(self, item):
         return self.dict()[item]
 
-    @validator("debug")
+    @validator("test")
     def validate_debug(cls, value):
         return bool(int(value))
 
@@ -37,6 +37,10 @@ class ProjectSettings(BaseSettings):
             f"postgresql://{self.db_user}:{self.db_password}"
             f"@{self.db_host}:{self.db_port}/{self.db_name}"
         )
+
+    @property
+    def base_api_url(self):
+        return f"http://{self.host}:{self.port}"
 
     @property
     def db_unix_socket_url(self):

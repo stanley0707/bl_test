@@ -63,7 +63,8 @@ async def invite_to_event(
     """
     Creat invite to event for any account
     :param event_id:
-    :param account curret session account:
+    :param invited_account_id:
+    :param account current session account:
     :return:
     """
     return await Event.manager.invite(

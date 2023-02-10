@@ -35,7 +35,7 @@ class ModelManager(BaseManager):
         session: AsyncSession = coroutine_depends_on(get_async_session),
     ) -> Union[Iterator, List]:
         """
-        SELECT all fields from manager model
+        SELECT all fields from manager modelss
         :param scalars:
         :param session: AsyncSession or AsyncSession from default Depends
         :param query: sqlalchemy sql
@@ -197,5 +197,5 @@ class ModelManager(BaseManager):
                         status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
                     )
                 else:
-                    session.commit()
+                    await session.commit()
                     return res

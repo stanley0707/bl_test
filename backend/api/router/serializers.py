@@ -7,11 +7,6 @@ from utils.event_date_scheduler import EventTimeFrame
 from pydantic import validator, constr, EmailStr, BaseModel
 
 
-class LoginUserSerializer(BaseModel):
-    email: EmailStr
-    password: constr(min_length=8)
-
-
 class CreateAccountSerializer(BaseModel):
     email: EmailStr
     password: constr(min_length=8)

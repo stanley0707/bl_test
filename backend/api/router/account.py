@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi import status, Path, Depends, APIRouter
+from fastapi import status, Path, Depends, APIRouter, Body
 from db.models import Account
 
 from .serializers import (
@@ -21,12 +21,12 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @account_router.post("/register/", status_code=status.HTTP_201_CREATED)
-async def create_user(data: CreateAccountSerializer):
+async def create_user(data: CreateAccountSerializer = Body()):
     await Account.manager.create(data)
 
 
 @account_router.get(
-    "",
+    "/",
     response_model=List[AccountSerializer],
     dependencies=[Depends(Account.manager.is_authorize)],
 )
