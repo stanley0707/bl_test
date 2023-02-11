@@ -121,6 +121,8 @@ Bob.schedule.set_item(
    - ```pip install -r backend/requirements.txt ```установка зависимостей
    - ```source ./run.sh; run_test_db``` запуск тестовой бд
    - ```python -m pytest tests ``` из директории backend
+
+
 API интерактивной документации быть доступен по http://0.0.0.0:8081/docss
 
 
